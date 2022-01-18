@@ -11,7 +11,7 @@
 @endsection
 @section('content')
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-@forelse($news as $newsItem)
+@forelse($newsList as $news)
 
 		<div class="col">
 			<div class="card shadow-sm">
@@ -20,13 +20,13 @@
 				<div class="card-body">
 					<div class="card-header">
 						<strong>
-							<a href="{{ route('news.show', ['id' => $newsItem['id']]) }}">
-								{{ $newsItem['title'] }}
+							<a href="{{ route('news.show', ['id' => $news->id]) }}">
+								{{ $news->title }}
 							</a>
 						</strong>
 					</div>
-					<p class="card-text">{!! $newsItem['description'] !!}</p>
-					<div>Автор: {{ $newsItem['author'] }}</div>
+					<p class="card-text">{!! $news->description !!}</p>
+					<div>Автор: {{ $news->author }}</div>
 					<div class="d-flex justify-content-between align-items-center">
 						<div class="btn-group">
 							<button type="button" class="btn btn-sm btn-outline-secondary">Смотреть подробнее</button>
