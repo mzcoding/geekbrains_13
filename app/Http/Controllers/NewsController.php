@@ -9,22 +9,18 @@ class NewsController extends Controller
 {
 	public function index()
 	{
-		$model = new News();
-		$news = $model->getNews();
+		$news = News::query()->select(
+			News::$availableFields
+		)->get();
+
 
 		return view('news.index', [
 			'newsList' => $news
 		]);
 	}
 
-	public function show(int $id)
+	public function show(News $news)
 	{
-		if($id > 10) {
-			abort(404);
-		}
-		$model = new News();
-		$news = $model->getNewsById($id);
-
 		return view('news.show', [
 			'news' => $news
 		]);

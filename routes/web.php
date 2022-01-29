@@ -34,5 +34,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function() {
 Route::get('/newslist', [NewsController::class, 'index'])
 	->name('news.index');
 Route::get('/news/{id}', [NewsController::class, 'show'])
-	->where('id', '\d+')
+	->where('news', '\d+')
 	->name('news.show');
+
+Route::get('/collection', function() {
+	$array = ['Anna', 'Victor', 'Alexey', 'dima', 'ira', 'Vasya', 'olya'];
+	$collection = collect($array);
+	dd($collection->map(function ($item) {
+		return mb_strtoupper($item);
+	})->sortKeys());
+});

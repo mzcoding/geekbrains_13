@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\Request;
 
@@ -15,33 +16,13 @@ class NewsController extends Controller
      */
     public function index()
     {
-		$model = new News();
-		$news = $model->getNews();
-
-
-		//dump(
-			/*
-			\DB::table('categories')
-				->join('news', 'news.category_id', '=', 'categories.id')
-			    ->select('categories.*', 'news.title as newsTitle')
-			    ->get()*/
-
-		//$news = \DB::table('news')
-			//->where('title', 'like', '%'.request()->query('s').'%')
-			// ->where('id', '<', 10)
-			/*->where([
-				['title', 'like', '%'.request()->query('s').'%'],
-				['id', '<', 10],
-				['display', '=', true]
-			])
-			->orWhere('display',  '=', false)*/
-		//	->whereNotBetween('id', [1,3])
-		//	->orderBy('id', 'desc')
-		//	->offset(5)
-		//	->limit(3)
-		//	->get()->toArray();
-
-		//);
+		$news = News::query()
+			->whereHas('category', function ($query) {
+				$query->where('id', '<', 10);
+			})
+			->with('category')
+			//->select(News::$availableFields)
+			->paginate(5);
 
         return view('admin.news.index', [
 			'newsList' => $news
@@ -55,7 +36,10 @@ class NewsController extends Controller
      */
     public function create()
     {
-        return view('admin.news.create');
+		$categories = Category::all();
+        return view('admin.news.create', [
+			'categories' => $categories
+		]);
     }
 
     /**
@@ -70,53 +54,78 @@ class NewsController extends Controller
 			'title' => ['required', 'string', 'min:5']
 		]);
 
-		$data = json_encode($request->all());
-		file_put_contents(public_path('news/data.json'), $data);
 
-        return response()->json($request->all());
+
+		$created = News::create(
+			$request->only(['category_id', 'title', 'author', 'status', 'description']) + [
+				'slug' => \Str::slug($request->input('title'))
+			]
+		);
+
+		if($created) {
+			return redirect()->route('admin.news.index')
+				     ->with('success', 'Запись успешно добавлена');
+		}
+
+		return back()->with('error', 'Не удалось добавить запись')
+			->withInput();
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param News $news
+	 * @return \Illuminate\Http\Response
+	 */
+    public function show(News $news)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param News $news
+	 * @return \Illuminate\Http\Response
+	 */
+    public function edit(News $news)
     {
-        //
+        return view('admin.news.edit', [
+			'news' => $news
+		]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @param News $news
+	 * @return \Illuminate\Http\Response
+	 */
+    public function update(Request $request, News $news)
     {
-        //
+
+		$updated = $news->fill($request->only(['category_id', 'title', 'author', 'status', 'description']) + [
+				'slug' => \Str::slug($request->input('title'))
+			])->save();
+
+		if($updated) {
+			return redirect()->route('admin.news.index')
+				->with('success', 'Запись успешно обновлена');
+		}
+
+		return back()->with('error', 'Не удалось обновить запись')
+			->withInput();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param News $news
+	 * @return \Illuminate\Http\Response
+	 */
+    public function destroy(News $news)
     {
         //
     }

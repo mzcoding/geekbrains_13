@@ -12,10 +12,13 @@
 @endsection
 @section('content')
     <div class="table-responsive">
+        @include('inc.message')
+
         <table class="table table-bordered">
             <thead>
                <tr>
                    <th>#ID</th>
+                   <th>Категория</th>
                    <th>Заголовок</th>
                    <th>Статус</th>
                    <th>Автор</th>
@@ -27,6 +30,7 @@
               @forelse($newsList as $news)
                   <tr>
                       <td>{{ $news->id }}</td>
+                      <td>{{ optional($news->category)->title }}</td>
                       <td>{{ $news->title }}</td>
                       <td>{{ $news->status }}</td>
                       <td>{{ $news->author }}</td>
@@ -41,5 +45,7 @@
               @endforelse
             </tbody>
         </table>
+
+        {{ $newsList->links() }}
     </div>
 @endsection
