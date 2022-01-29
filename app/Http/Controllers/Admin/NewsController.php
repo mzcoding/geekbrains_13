@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\News\CreateRequest;
+use App\Http\Requests\News\EditRequest;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\Request;
@@ -42,22 +44,15 @@ class NewsController extends Controller
 		]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @param CreateRequest $request
+	 * @return \Illuminate\Http\Response
+	 */
+    public function store(CreateRequest $request)
     {
-		$request->validate([
-			'title' => ['required', 'string', 'min:5']
-		]);
-
-
-
-		$created = News::create(
-			$request->only(['category_id', 'title', 'author', 'status', 'description']) + [
+		$created = News::create($request->validated() + [
 				'slug' => \Str::slug($request->input('title'))
 			]
 		);
@@ -91,22 +86,23 @@ class NewsController extends Controller
 	 */
     public function edit(News $news)
     {
+		$categories = Category::all();
         return view('admin.news.edit', [
-			'news' => $news
+			'news' => $news,
+			'categories' => $categories
 		]);
     }
 
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param \Illuminate\Http\Request $request
+	 * @param EditRequest $request
 	 * @param News $news
 	 * @return \Illuminate\Http\Response
 	 */
-    public function update(Request $request, News $news)
+    public function update(EditRequest $request, News $news)
     {
-
-		$updated = $news->fill($request->only(['category_id', 'title', 'author', 'status', 'description']) + [
+		$updated = $news->fill($request->validated() + [
 				'slug' => \Str::slug($request->input('title'))
 			])->save();
 
