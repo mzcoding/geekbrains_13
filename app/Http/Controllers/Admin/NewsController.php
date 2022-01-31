@@ -123,6 +123,11 @@ class NewsController extends Controller
 	 */
     public function destroy(News $news)
     {
-        //
+        try{
+			$news->delete();
+			return response()->json('ok');
+		}catch(\Exception $e) {
+			\Log::error("Error delete news item");
+		}
     }
 }

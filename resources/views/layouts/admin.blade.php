@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>@section('title') - GeekBrains @show</title>
 
-    <!-- Bootstrap core CSS -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
         .bd-placeholder-img {
