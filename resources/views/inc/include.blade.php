@@ -1,2 +1,1 @@
-Hello, {{ $name }}
-{{ $someVariable }}
+Hello, {{ Auth::user()->name  }}

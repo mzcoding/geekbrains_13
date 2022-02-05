@@ -5,7 +5,7 @@
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
 
-           @include('inc.include', ['name' => 'Ivan'])
+           @include('inc.include')
         </div>
 
     </div>
