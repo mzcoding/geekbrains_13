@@ -14,6 +14,7 @@ class ParserService implements Parser
 	 * @var BaseDocument
 	 */
 	protected BaseDocument $load;
+	protected string $fileName;
 
 	/**
 	 * @param string $link
@@ -22,15 +23,16 @@ class ParserService implements Parser
 	public function load(string $link): Parser
 	{
 		$this->load = XmlParser::load($link);
+		$this->fileName = $link;
 		return $this;
 	}
 
 	/**
-	 * @return array
+	 * @return void
 	 */
-	public function start(): array
+	public function start(): void
 	{
-		return $this->load->parse([
+		$data =  $this->load->parse([
 			'title' => [
 				'uses' => 'channel.title'
 			],
@@ -47,5 +49,9 @@ class ParserService implements Parser
 				'uses' => 'channel.item[title,link,guid,description,pubDate]'
 			]
 		]);
+
+		$explode = explode("/", $this->fileName);
+		$name = end($explode);
+		\Storage::append('parsing/' . $name, json_encode($data));
 	}
 }

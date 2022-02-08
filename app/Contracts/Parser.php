@@ -15,5 +15,5 @@ interface Parser
 	/**
 	 * @return array
 	 */
-	public function start(): array;
+	public function start(): void;
 }
